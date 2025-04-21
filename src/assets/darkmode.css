@@ -1,0 +1,43 @@
+/* Global dark mode styles to ensure consistent application across browsers */
+
+/* Basic dark mode for html and body */
+html.dark,
+body.dark-mode {
+  background-color: #111827;
+  color: #f3f4f6;
+  color-scheme: dark;
+}
+
+/* Override any browser extensions that might interfere */
+html.dark .darkmode-layer,
+html.dark .darkmode-toggle,
+html.dark #dark-reader-style,
+html.dark .darkreader--fallback {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+
+/* Force dark mode colors for main elements */
+html.dark body {
+  background-color: #111827;
+  color: #f3f4f6;
+}
+
+/* Force light mode colors when not in dark mode */
+html:not(.dark) body {
+  background-color: #ffffff;
+  color: #111827;
+}
+
+/* Compatibility with DarkReader extension */
+@media screen {
+  html.dark [data-darkreader-inline-bgcolor],
+  html.dark [data-darkreader-inline-color],
+  html.dark [data-darkreader-inline-border],
+  html.dark [data-darkreader-inline-bgimage],
+  html.dark [data-darkreader-inline-fill],
+  html.dark [data-darkreader-inline-stroke] {
+    all: unset !important;
+  }
+} 
