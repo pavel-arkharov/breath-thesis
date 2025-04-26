@@ -1,5 +1,14 @@
 <script setup lang="ts">
 // Initialize app
+import { onMounted } from 'vue'
+
+// Debug function to test dark mode directly
+onMounted(() => {
+  console.log('App mounted, testing direct dark mode manipulation');
+  // Try forcing dark mode directly on the document element
+  document.documentElement.classList.add('dark');
+  console.log('Added dark class to html element, classes:', document.documentElement.className);
+})
 </script>
 
 <template>

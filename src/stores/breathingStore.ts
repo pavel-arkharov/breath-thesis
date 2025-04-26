@@ -24,6 +24,7 @@ const saveToStorage = <T>(key: string, value: T): void => {
 
 // Direct DOM manipulations for dark mode
 const enableDarkMode = (): void => {
+  console.log('enableDarkMode called, adding dark class...')
   // Apply the dark class to document element for Tailwind dark mode
   document.documentElement.classList.add('dark')
   
@@ -32,9 +33,12 @@ const enableDarkMode = (): void => {
   
   // Force a reflow to ensure style changes are applied immediately
   document.documentElement.style.color = document.documentElement.style.color
+  
+  console.log('Dark mode enabled, classes:', document.documentElement.className)
 }
 
 const disableDarkMode = (): void => {
+  console.log('disableDarkMode called, removing dark class...')
   // Remove the dark class
   document.documentElement.classList.remove('dark')
   
@@ -43,6 +47,8 @@ const disableDarkMode = (): void => {
   
   // Force a reflow to ensure style changes are applied immediately
   document.documentElement.style.color = document.documentElement.style.color
+  
+  console.log('Dark mode disabled, classes:', document.documentElement.className)
 }
 
 // Apply dark mode class to document
@@ -135,14 +141,18 @@ export const useBreathingStore = defineStore('breathing', () => {
   
   // Toggle dark mode
   const toggleDarkMode = (): void => {
+    console.log('toggleDarkMode called, current state:', isDarkMode.value)
     isDarkMode.value = !isDarkMode.value
     localStorage.setItem('darkMode', isDarkMode.value.toString())
     
     if (isDarkMode.value) {
+      console.log('Enabling dark mode...')
       enableDarkMode()
     } else {
+      console.log('Disabling dark mode...')
       disableDarkMode()
     }
+    console.log('After toggle, isDarkMode =', isDarkMode.value)
   }
   
   // Initialize dark mode on store creation

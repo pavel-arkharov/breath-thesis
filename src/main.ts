@@ -3,6 +3,7 @@ import { createPinia } from 'pinia'
 import { createRouter, createWebHistory } from 'vue-router'
 import App from './App.vue'
 import './style.css'
+import './assets/darkmode.css'
 
 // Import routes
 import Home from './views/Home.vue'
