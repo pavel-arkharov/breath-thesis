@@ -10,9 +10,11 @@ const crossfadeDuration = 10 // seconds
 const audioReady = ref(false)
 const audioError = ref<string | null>(null)
 
-// The simplest approach - move MP3 file to public folder
-// This assumes the file has been copied to public/bg-music/ana.mp3
-const audioPath = '/bg-music/ana.mp3'
+// Get the base URL for GitHub Pages deployment
+const baseUrl = document.querySelector('base')?.getAttribute('href') || '/'
+
+// Properly join the base URL with the audio path
+const audioPath = `${baseUrl}bg-music/ana.mp3`.replace('//', '/')
 
 // Initialize audio objects
 onMounted(() => {
