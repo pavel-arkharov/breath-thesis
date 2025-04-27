@@ -11,10 +11,12 @@ const audioReady = ref(false)
 const audioError = ref<string | null>(null)
 
 // Get the base URL for GitHub Pages deployment
-const baseUrl = document.querySelector('base')?.getAttribute('href') || '/'
+// Check if we're running on GitHub Pages by looking at the location
+const isGitHubPages = window.location.hostname.includes('github.io')
+const baseUrl = isGitHubPages ? '/breath-thesis/' : '/'
 
 // Properly join the base URL with the audio path
-const audioPath = `${baseUrl}bg-music/ana.mp3`.replace('//', '/')
+const audioPath = `${baseUrl}bg-music/ana.mp3`
 
 // Initialize audio objects
 onMounted(() => {
