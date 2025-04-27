@@ -4,22 +4,34 @@ import { fileURLToPath, URL } from 'node:url'
 import tailwindcss from '@tailwindcss/vite'
 
 // https://vite.dev/config/
-export default defineConfig({
-  // Base path for GitHub Pages deployment
-  base: '/breath-thesis/',
-  plugins: [
-    vue(),
-    tailwindcss()
-  ],
-  resolve: {
-    alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
+export default defineConfig(({ command }) => {
+  const isProduction = command === 'build';
+  
+  return {
+    // Base path: use '/breath-thesis/' for production (GitHub Pages), '/' for development
+    base: isProduction ? '/breath-thesis/' : '/',
+    plugins: [
+      vue(),
+      tailwindcss()
+    ],
+    resolve: {
+      alias: {
+        '@': fileURLToPath(new URL('./src', import.meta.url))
+      }
+    },
+    // Configure Vite to handle assets properly including audio files
+    assetsInclude: ['**/*.mp3', '**/*.wav', '**/*.ogg'],
+    // Ensure build doesn't fail on importing assets
+    build: {
+      assetsInlineLimit: 0, // Never inline assets, always keep them as separate files
+      rollupOptions: {
+        output: {
+          manualChunks: undefined,
+          entryFileNames: 'assets/[name].[hash].js',
+          chunkFileNames: 'assets/[name].[hash].js',
+          assetFileNames: 'assets/[name].[hash].[ext]'
+        }
+      }
     }
-  },
-  // Configure Vite to handle assets properly including audio files
-  assetsInclude: ['**/*.mp3', '**/*.wav', '**/*.ogg'],
-  // Ensure build doesn't fail on importing assets
-  build: {
-    assetsInlineLimit: 0, // Never inline assets, always keep them as separate files
-  }
+  };
 })

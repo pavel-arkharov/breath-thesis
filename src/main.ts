@@ -9,9 +9,13 @@ import './assets/darkmode.css'
 import Home from './views/Home.vue'
 import Settings from './views/Settings.vue'
 
+// Get the base URL - empty string for dev, '/breath-thesis/' for production
+// @ts-ignore - handle BASE_URL from Vite
+const baseUrl = import.meta.env?.BASE_URL || '/'
+
 // Create router instance
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHistory(baseUrl),
   routes: [
     { path: '/', component: Home, name: 'home' },
     { path: '/settings', component: Settings, name: 'settings' }

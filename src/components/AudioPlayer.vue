@@ -11,9 +11,8 @@ const audioReady = ref(false)
 const audioError = ref<string | null>(null)
 
 // Get the base URL for GitHub Pages deployment
-// Check if we're running on GitHub Pages by looking at the location
-const isGitHubPages = window.location.hostname.includes('github.io')
-const baseUrl = isGitHubPages ? '/breath-thesis/' : '/'
+// @ts-ignore - handle BASE_URL from Vite
+const baseUrl = import.meta.env?.BASE_URL || '/'
 
 // Properly join the base URL with the audio path
 const audioPath = `${baseUrl}bg-music/ana.mp3`
@@ -23,7 +22,7 @@ onMounted(() => {
   try {
     console.log('Initializing audio player with path:', audioPath)
     console.log('Current hostname:', window.location.hostname)
-    console.log('Is GitHub Pages?', isGitHubPages)
+    console.log('Is GitHub Pages?', window.location.hostname.includes('github.io'))
     console.log('Base URL:', baseUrl)
     
     // Create first audio element
