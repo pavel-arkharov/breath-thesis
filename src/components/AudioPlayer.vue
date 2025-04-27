@@ -22,6 +22,9 @@ const audioPath = `${baseUrl}bg-music/ana.mp3`
 onMounted(() => {
   try {
     console.log('Initializing audio player with path:', audioPath)
+    console.log('Current hostname:', window.location.hostname)
+    console.log('Is GitHub Pages?', isGitHubPages)
+    console.log('Base URL:', baseUrl)
     
     // Create first audio element
     currentAudio.value = new Audio(audioPath)
