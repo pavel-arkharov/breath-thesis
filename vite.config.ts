@@ -19,5 +19,6 @@ export default defineConfig({
   // Ensure build doesn't fail on importing assets
   build: {
     assetsInlineLimit: 0, // Never inline assets, always keep them as separate files
-  }
+  },
+  base: '/breath-thesis/', // Use your repository name with hyphen, not underscore
 })
