@@ -1,9 +1,11 @@
-name: Deploy to GitHub Pages
+name: Deploy Vue.js to GitHub Pages
 
 on:
   push:
     branches:
       - main
+  # Allow manual triggering
+  workflow_dispatch:
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
