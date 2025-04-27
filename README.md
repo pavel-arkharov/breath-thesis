@@ -1,15 +1,38 @@
-# Breathing Trainer
+# Breathing Exercise App
 
-A web-based breathing exercise application built with Vue 3. This app guides users through customizable breathing exercises with alternating breathing cycles (inhale–hold–exhale–hold) and visual feedback.
+[![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Deployed-brightgreen)](https://pavel-arkharov.github.io/breath-thesis/)
+[![GitHub Actions](https://github.com/pavel-arkharov/breath-thesis/actions/workflows/deploy.yml/badge.svg)](https://github.com/pavel-arkharov/breath-thesis/actions)
+
+A modern breathing exercise application built with Vue 3 and Tailwind CSS v4. Features include customizable breathing patterns, dark mode, and background audio.
 
 ## Features
 
-- **Four-phase breathing loop**: Inhale, Hold, Exhale, Hold
-- **Customizable timers**: Set durations for each phase
-- **Multiple timer sets**: Create different breathing patterns in sequence
-- **Visual feedback**: Animated breathing circle that shows progress
-- **Dark/Light mode**: Toggle between themes with persistence
-- **Responsive design**: Works on desktop and mobile devices
+- Customizable breathing patterns (inhale, hold, exhale, hold)
+- Multiple timer sets
+- Configurable rounds
+- Dark mode support
+- Background audio with crossfade
+- Mobile-friendly design
+
+## Development
+
+```bash
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
+
+# Deploy to GitHub Pages
+npm run deploy
+```
+
+## Live Demo
+
+Visit the live application: [Breathing Exercise App](https://pavel-arkharov.github.io/breath-thesis/)
 
 ## Technologies Used
 
@@ -60,7 +83,6 @@ The build artifacts will be stored in the `dist/` directory.
 ```
 breathing-trainer/
 ├── public/              # Static assets
-├── src/
 │   ├── assets/          # Images and other assets
 │   ├── components/      # Vue components
 │   ├── composables/     # Reusable composition functions
