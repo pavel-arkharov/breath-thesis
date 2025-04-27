@@ -3,6 +3,7 @@ import { computed, ref, watch } from 'vue'
 import { useBreathingStore } from '@/stores/breathingStore'
 import { BreathPhase } from '@/types'
 import RaceCountdown from './RaceCountdown.vue'
+import TimerPresetTable from './TimerPresetTable.vue'
 
 const store = useBreathingStore()
 
@@ -16,6 +17,12 @@ const fadeClass = ref('')
 const showRaceCountdown = computed(() => {
   return store.session.isRunning && 
          store.session.currentPhase === BreathPhase.PREPARE;
+})
+
+// Determine if we're in standby (not running and not completed)
+const isStandby = computed(() => {
+  return !store.session.isRunning && 
+         store.session.currentPhase !== BreathPhase.COMPLETED;
 })
 
 // Map breath phase to color CSS variable
@@ -125,72 +132,80 @@ watch(
 
 <template>
   <div class="relative">
-    <!-- Rounds indicator -->
-    <div 
-      v-if="store.session.isRunning && store.session.currentPhase !== BreathPhase.COMPLETED" 
-      class="text-center mb-4 font-medium"
-    >
-      {{ roundsInfo }}
+    <!-- Timer Preset Table in standby mode -->
+    <div v-if="isStandby">
+      <TimerPresetTable />
     </div>
     
-    <!-- Race Countdown for PREPARE phase -->
-    <div v-if="showRaceCountdown && !store.isWaitingAtZero" class="breathing-circle-container">
-      <RaceCountdown :countdown="store.session.timeRemaining" />
-    </div>
-    
-    <!-- Regular circle for other phases -->
-    <div v-else class="breathing-circle-container" :class="fadeClass">
-      <!-- Progress circle -->
-      <svg class="breathing-circle" viewBox="0 0 100 100">
-        <!-- Background circle -->
-        <circle
-          cx="50"
-          cy="50"
-          r="45"
-          fill="transparent"
-          stroke="currentColor"
-          stroke-width="2"
-          class="text-gray-200 dark:text-gray-700"
-        />
-        
-        <!-- Progress arc -->
-        <circle
-          v-if="store.session.isRunning && store.session.currentPhase !== BreathPhase.COMPLETED"
-          cx="50"
-          cy="50"
-          r="45"
-          fill="transparent"
-          :stroke="phaseColor"
-          stroke-width="4"
-          stroke-linecap="round"
-          class="progress-arc"
-          :style="{
-            strokeDasharray: `${2 * Math.PI * 45}`,
-            strokeDashoffset: `${2 * Math.PI * 45 * (1 - progress / 100)}`,
-          }"
-          transform="rotate(-90, 50, 50)"
-        />
-        
-        <!-- Timer display in center -->
-        <text
-          x="50"
-          y="50"
-          text-anchor="middle"
-          dominant-baseline="middle"
-          class="timer-text"
-          :class="{ 
-            'text-4xl': true, 
-            'text-5xl': store.session.timeRemaining <= 3 && store.session.currentPhase === BreathPhase.PREPARE 
-          }"
-        >
-          {{ store.formatTime(store.session.timeRemaining) }}
-        </text>
-      </svg>
-    </div>
-    
-    <!-- Phase name display -->
-    <div class="text-center mt-4 text-xl font-semibold" :style="{ color: phaseColor }">
-      {{ phaseName }}
+    <!-- Active session UI -->
+    <div v-else>
+      <!-- Rounds indicator -->
+      <div 
+        v-if="store.session.isRunning && store.session.currentPhase !== BreathPhase.COMPLETED" 
+        class="text-center mb-4 font-medium"
+      >
+        {{ roundsInfo }}
+      </div>
+      
+      <!-- Race Countdown for PREPARE phase -->
+      <div v-if="showRaceCountdown && !store.isWaitingAtZero" class="breathing-circle-container">
+        <RaceCountdown :countdown="store.session.timeRemaining" />
+      </div>
+      
+      <!-- Regular circle for other phases -->
+      <div v-else class="breathing-circle-container" :class="fadeClass">
+        <!-- Progress circle -->
+        <svg class="breathing-circle" viewBox="0 0 100 100">
+          <!-- Background circle -->
+          <circle
+            cx="50"
+            cy="50"
+            r="45"
+            fill="transparent"
+            stroke="currentColor"
+            stroke-width="2"
+            class="text-gray-200 dark:text-gray-700"
+          />
+          
+          <!-- Progress arc -->
+          <circle
+            v-if="store.session.isRunning && store.session.currentPhase !== BreathPhase.COMPLETED"
+            cx="50"
+            cy="50"
+            r="45"
+            fill="transparent"
+            :stroke="phaseColor"
+            stroke-width="4"
+            stroke-linecap="round"
+            class="progress-arc"
+            :style="{
+              strokeDasharray: `${2 * Math.PI * 45}`,
+              strokeDashoffset: `${2 * Math.PI * 45 * (1 - progress / 100)}`,
+            }"
+            transform="rotate(-90, 50, 50)"
+          />
+          
+          <!-- Timer display in center -->
+          <text
+            x="50"
+            y="50"
+            text-anchor="middle"
+            dominant-baseline="middle"
+            class="timer-text"
+            :class="{ 
+              'text-4xl': true, 
+              'text-5xl': store.session.timeRemaining <= 3 && store.session.currentPhase === BreathPhase.PREPARE 
+            }"
+          >
+            {{ store.formatTime(store.session.timeRemaining) }}
+          </text>
+        </svg>
+      </div>
+      
+      <!-- Phase name display -->
+      <div class="text-center mt-4 text-xl font-semibold" :style="{ color: phaseColor }">
+        {{ phaseName }}
+      </div>
     </div>
   </div>
 </template>
