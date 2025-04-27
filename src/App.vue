@@ -1,6 +1,7 @@
 <script setup lang="ts">
 // Initialize app
 import { onMounted } from 'vue'
+import AudioPlayer from './components/AudioPlayer.vue'
 
 // Debug function to test dark mode directly
 onMounted(() => {
@@ -13,6 +14,9 @@ onMounted(() => {
 
 <template>
   <div class="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+    <!-- Audio player component -->
+    <AudioPlayer />
+    
     <router-view></router-view>
   </div>
 </template>

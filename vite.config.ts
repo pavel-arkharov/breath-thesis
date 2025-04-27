@@ -13,5 +13,11 @@ export default defineConfig({
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
+  },
+  // Configure Vite to handle assets properly including audio files
+  assetsInclude: ['**/*.mp3', '**/*.wav', '**/*.ogg'],
+  // Ensure build doesn't fail on importing assets
+  build: {
+    assetsInlineLimit: 0, // Never inline assets, always keep them as separate files
   }
 })
