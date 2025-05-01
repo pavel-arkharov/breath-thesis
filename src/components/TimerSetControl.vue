@@ -51,14 +51,14 @@ function deleteTimerSet() {
 </script>
 
 <template>
-  <div class="mb-6 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+  <div class="mb-6 border border-gray-400 dark:border-gray-700 rounded-lg p-4 bg-gray-300 dark:bg-gray-800">
     <div class="flex justify-between items-center mb-3">
-      <h3 class="text-lg font-medium">{{ timerSetName }}</h3>
+      <h3 class="text-lg font-medium text-black dark:text-gray-100">{{ timerSetName }}</h3>
       
       <button 
         v-if="canDelete" 
         @click="deleteTimerSet" 
-        class="text-red-500 hover:text-red-700"
+        class="text-red-700 hover:text-red-900 dark:text-red-500 dark:hover:text-red-400"
         aria-label="Delete timer set"
       >
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -69,56 +69,56 @@ function deleteTimerSet() {
     
     <div class="grid grid-cols-2 gap-4">
       <div>
-        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <label class="block text-sm font-bold text-black dark:text-white mb-1">
           Inhale (seconds)
         </label>
         <input 
           type="number" 
           min="1" 
           max="20" 
-          class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700"
+          class="w-full px-3 py-2 border border-gray-500 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200"
           :value="timerSet.inhaleTime"
           @change="updateInhaleTime"
         >
       </div>
       
       <div>
-        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <label class="block text-sm font-bold text-black dark:text-white mb-1">
           Hold (seconds)
         </label>
         <input 
           type="number" 
           min="0" 
           max="20" 
-          class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700"
+          class="w-full px-3 py-2 border border-gray-500 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200"
           :value="timerSet.holdAfterInhaleTime"
           @change="updateHoldAfterInhaleTime"
         >
       </div>
       
       <div>
-        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <label class="block text-sm font-bold text-black dark:text-white mb-1">
           Exhale (seconds)
         </label>
         <input 
           type="number" 
           min="1" 
           max="20" 
-          class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700"
+          class="w-full px-3 py-2 border border-gray-500 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200"
           :value="timerSet.exhaleTime"
           @change="updateExhaleTime"
         >
       </div>
       
       <div>
-        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <label class="block text-sm font-bold text-black dark:text-white mb-1">
           Hold after exhale (seconds)
         </label>
         <input 
           type="number" 
           min="0" 
           max="20" 
-          class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700"
+          class="w-full px-3 py-2 border border-gray-500 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200"
           :value="timerSet.holdAfterExhaleTime"
           @change="updateHoldAfterExhaleTime"
         >

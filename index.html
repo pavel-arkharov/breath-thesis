@@ -2,11 +2,25 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="icon" type="image/svg+xml" href="./vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Breathing Trainer App - Customizable breathing exercises for relaxation and focus" />
     <meta name="theme-color" content="#4a90e2" />
-    <title>Breathing Trainer</title>
+    <title>WaVeS</title>
+    <!-- Prevent flash of unstyled content by setting theme early -->
+    <script>
+      // Set dark mode before the page loads if previously saved
+      if (localStorage.getItem('darkMode') === 'true') {
+        document.documentElement.classList.add('dark');
+      }
+    </script>
+    <!-- Dynamic base URL for GitHub Pages compatibility -->
+    <script>
+      // Set the base URL dynamically
+      const isGitHubPages = window.location.hostname.includes('github.io');
+      const baseUrl = isGitHubPages ? '/breath-thesis/' : '/';
+      document.write(`<base href="${baseUrl}">`);
+    </script>
     <style>
       /* Direct dark mode override that doesn't depend on Tailwind */
       html.dark {
@@ -14,44 +28,62 @@
       }
       
       html.dark body {
-        background-color: #111827 !important;
-        color: #f3f4f6 !important;
+        background-color: #0D0D0D !important; /* Almost black background */
+        color: #FFFFFF !important; /* Pure white text */
       }
       
       html.dark .bg-white {
-        background-color: #1f2937 !important;
+        background-color: #181818 !important; /* Slightly lighter black for cards */
       }
       
       html.dark .bg-gray-50 {
-        background-color: #111827 !important;
+        background-color: #0D0D0D !important; /* Almost black for background */
       }
       
       html.dark .text-gray-700, 
       html.dark .text-gray-900 {
-        color: #e5e7eb !important;
+        color: #FFFFFF !important; /* White text */
       }
       
       /* Dark mode for our timer preset table */
       html.dark .dark\:bg-gray-800 {
-        background-color: #1f2937 !important;
+        background-color: #181818 !important; /* Slightly lighter black for UI elements */
       }
       
       html.dark .dark\:text-gray-300,
       html.dark .dark\:text-gray-400 {
-        color: #d1d5db !important;
+        color: #00FF85 !important; /* Neon green text for subtle elements */
       }
       
       html.dark .dark\:border-gray-700 {
-        border-color: #374151 !important;
+        border-color: #222222 !important; /* Light black for borders */
       }
       
       html.dark .dark\:bg-blue-900\/30 {
-        background-color: rgba(30, 58, 138, 0.3) !important;
+        background-color: rgba(30, 144, 255, 0.3) !important; /* Electric blue semi-transparent background */
+      }
+
+      /* Cyberpunk neon effects */
+      html.dark .dark\:text-blue-400,
+      html.dark .dark\:text-blue-500 {
+        color: #1E90FF !important; /* Electric blue text */
+        text-shadow: 0 0 8px rgba(30, 144, 255, 0.7); /* Electric blue glow */
+      }
+
+      /* Neon effects for hover states */
+      html.dark .dark\:hover\:bg-gray-700:hover {
+        background-color: rgba(255, 0, 153, 0.2) !important; /* Vivid pink semi-transparent for hover */
+        box-shadow: 0 0 5px rgba(255, 0, 153, 0.5); /* Subtle pink glow */
       }
     </style>
   </head>
   <body>
-    <div id="app"></div>
+    <div id="app">
+      <!-- This will be replaced by Vue when successfully loaded -->
+      <div style="padding: 20px; font-family: sans-serif;">
+        <h2>Loading Breathing Trainer App...</h2>
+      </div>
+    </div>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

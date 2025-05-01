@@ -36,6 +36,8 @@ const phaseColor = computed(() => {
       return 'var(--exhale-color)'
     case BreathPhase.HOLD_AFTER_EXHALE:
       return 'var(--hold-out-color)'
+    case BreathPhase.COMPLETED:
+      return 'var(--completed-color, #00FF85)'
     default:
       return 'var(--transition-color)'
   }
@@ -167,7 +169,7 @@ watch(
             class="text-gray-200 dark:text-gray-700"
           />
           
-          <!-- Progress arc -->
+          <!-- Progress arc or completion circle -->
           <circle
             v-if="store.session.isRunning && store.session.currentPhase !== BreathPhase.COMPLETED"
             cx="50"
@@ -185,8 +187,22 @@ watch(
             transform="rotate(-90, 50, 50)"
           />
           
-          <!-- Timer display in center -->
+          <!-- Completion circle with animation -->
+          <circle
+            v-if="store.session.currentPhase === BreathPhase.COMPLETED"
+            cx="50"
+            cy="50"
+            r="45"
+            fill="transparent"
+            :stroke="phaseColor"
+            stroke-width="4"
+            class="completion-circle"
+            transform="rotate(-90, 50, 50)"
+          />
+          
+          <!-- Timer display in center - only shown when not completed -->
           <text
+            v-if="store.session.currentPhase !== BreathPhase.COMPLETED"
             x="50"
             y="50"
             text-anchor="middle"
@@ -203,7 +219,14 @@ watch(
       </div>
       
       <!-- Phase name display -->
-      <div class="text-center mt-4 text-xl font-semibold" :style="{ color: phaseColor }">
+      <div 
+        class="text-center mt-4 font-semibold transition-all duration-500" 
+        :class="{
+          'text-xl': store.session.currentPhase !== BreathPhase.COMPLETED,
+          'text-3xl': store.session.currentPhase === BreathPhase.COMPLETED
+        }"
+        :style="{ color: phaseColor }"
+      >
         {{ phaseName }}
       </div>
     </div>
@@ -225,6 +248,22 @@ watch(
 
 .progress-arc {
   transition: stroke-dashoffset 0.1s linear;
+}
+
+.completion-circle {
+  stroke-dasharray: 283;
+  animation: completionPulse 3s ease-in-out infinite;
+}
+
+@keyframes completionPulse {
+  0%, 100% {
+    stroke-opacity: 0.3;
+    stroke-width: 4;
+  }
+  50% {
+    stroke-opacity: 0.8;
+    stroke-width: 6;
+  }
 }
 
 .timer-text {
