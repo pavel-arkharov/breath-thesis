@@ -1,22 +1,46 @@
 <script setup lang="ts">
 // Initialize app
-import { onMounted } from 'vue'
-import AudioPlayer from './components/AudioPlayer.vue'
+import { onMounted, watch, ref } from 'vue'
+import Navbar from './components/Navbar.vue'
+import SettingsPanel from './components/SettingsPanel.vue'
+import { useBreathingStore } from '@/stores/breathingStore'
 
-// Debug function to test dark mode directly
+const store = useBreathingStore()
+const isSettingsPanelVisible = ref(false)
+
+console.log('App.vue initial isDarkMode state:', store.isDarkMode)
+
+// Apply dark mode based on store settings
 onMounted(() => {
-  console.log('App mounted, testing direct dark mode manipulation');
-  // Try forcing dark mode directly on the document element
-  document.documentElement.classList.add('dark');
-  console.log('Added dark class to html element, classes:', document.documentElement.className);
+  console.log('App.vue onMounted - isDarkMode:', store.isDarkMode)
 })
+
+// Watch for changes to dark mode
+watch(() => store.isDarkMode, (newValue) => {
+  console.log('App.vue - isDarkMode changed to:', newValue)
+}, { immediate: true })
+
+// Toggle settings panel visibility
+function toggleSettingsPanel() {
+  isSettingsPanelVisible.value = !isSettingsPanelVisible.value
+}
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-    <!-- Audio player component -->
-    <AudioPlayer />
+  <div class="min-h-screen text-gray-900 dark:text-white" style="background-color: var(--background-color)">
+    <!-- Navigation bar -->
+    <Navbar @toggle-settings="toggleSettingsPanel" />
     
-    <router-view></router-view>
+    <!-- Main content with padding for navbar -->
+    <main class="pt-16 pb-8">
+      <router-view></router-view>
+    </main>
+    
+    <!-- Settings panel (slide out from right) -->
+    <SettingsPanel 
+      :is-visible="isSettingsPanelVisible" 
+      @close="isSettingsPanelVisible = false"
+      @save="isSettingsPanelVisible = false"
+    />
   </div>
 </template>

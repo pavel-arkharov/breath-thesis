@@ -2,7 +2,7 @@
 
 :root {
   /* Colors for light mode */
-  --background-color: #f9fafb;
+  --background-color: #c5ccc0;
   --text-color: #111827;
   --accent-color: #3b82f6;
   
@@ -12,6 +12,7 @@
   --hold-in-color: #9333ea;
   --hold-out-color: #be123c;
   --transition-color: #f59e0b;
+  --completed-color: #16a34a; /* Success green for completed state */
 }
 
 /* Dark mode using Tailwind's class-based approach */
@@ -26,6 +27,7 @@
   --hold-in-color: #a855f7;
   --hold-out-color: #e11d48;
   --transition-color: #f59e0b;
+  --completed-color: #00FF85; /* Neon green for completed state in dark mode */
 }
 
 /* Base styles - Ensure the dark mode cascade works correctly */

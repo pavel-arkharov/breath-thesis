@@ -49,8 +49,8 @@ function saveSettings() {
   <div class="container mx-auto px-4 py-8">
     <h1 class="text-3xl font-bold mb-6 text-center">Breathing Settings</h1>
     
-    <div class="max-w-lg mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
-      <h2 class="text-xl font-semibold mb-4">Configure Breathing Exercise</h2>
+    <div class="max-w-lg mx-auto bg-gray-100 dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
+      <h2 class="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Configure Breathing Exercise</h2>
       
       <!-- Render timer sets -->
       <TimerSetControl
@@ -70,14 +70,14 @@ function saveSettings() {
         </button>
         
         <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label class="block text-sm font-medium text-gray-900 dark:text-gray-300 mb-1">
             Rounds
           </label>
           <input 
             type="number" 
             min="1" 
             max="50" 
-            class="w-20 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700"
+            class="w-20 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200"
             :value="store.currentExercise.rounds"
             @change="updateRounds"
           >
@@ -101,12 +101,12 @@ function saveSettings() {
     </div>
     
     <!-- App preferences -->
-    <div class="max-w-lg mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
-      <h2 class="text-xl font-semibold mb-4">App Settings</h2>
+    <div class="max-w-lg mx-auto bg-gray-100 dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
+      <h2 class="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">App Settings</h2>
       
       <!-- Dark mode toggle -->
       <div class="flex justify-between items-center mb-4">
-        <span class="text-gray-700 dark:text-gray-300">Dark Mode</span>
+        <span class="text-gray-900 dark:text-gray-300">Dark Mode</span>
         <label class="relative inline-flex items-center cursor-pointer">
           <input 
             type="checkbox" 
@@ -115,7 +115,7 @@ function saveSettings() {
             class="sr-only peer"
           >
           <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-          <span class="ml-3 text-sm font-medium text-gray-700 dark:text-gray-300">
+          <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">
             <svg v-if="store.isDarkMode" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
               <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
             </svg>
@@ -128,7 +128,7 @@ function saveSettings() {
       
       <!-- Timer format toggle -->
       <div class="flex justify-between items-center">
-        <span class="text-gray-700 dark:text-gray-300">Timer Format</span>
+        <span class="text-gray-900 dark:text-gray-300">Timer Format</span>
         <label class="relative inline-flex items-center cursor-pointer">
           <input 
             type="checkbox" 
@@ -137,7 +137,7 @@ function saveSettings() {
             class="sr-only peer"
           >
           <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-          <span class="ml-3 text-sm font-medium text-gray-700 dark:text-gray-300">
+          <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">
             {{ store.timerFormat === TimerFormat.SIMPLE ? 'Simple (3, 2, 1)' : 'Time (00:03)' }}
           </span>
         </label>

@@ -113,12 +113,15 @@ export const useBreathingStore = defineStore('breathing', () => {
   
   // Initialize dark mode based on saved preference or system preference
   const initializeDarkMode = (): void => {
+    console.log('initializeDarkMode called');
     // First check localStorage for saved preference
     const savedMode = localStorage.getItem('darkMode')
+    console.log('Saved dark mode preference:', savedMode);
     
     if (savedMode !== null) {
       // User has a saved preference
       const darkModeEnabled = savedMode === 'true'
+      console.log('Using saved preference, dark mode enabled:', darkModeEnabled);
       isDarkMode.value = darkModeEnabled
       
       if (darkModeEnabled) {
@@ -129,6 +132,7 @@ export const useBreathingStore = defineStore('breathing', () => {
     } else {
       // No saved preference, check system preference
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+      console.log('No saved preference, using system preference:', prefersDark);
       isDarkMode.value = prefersDark
       
       if (prefersDark) {
@@ -157,6 +161,16 @@ export const useBreathingStore = defineStore('breathing', () => {
   
   // Initialize dark mode on store creation
   initializeDarkMode()
+  
+  // Watch for isDarkMode changes to apply them
+  watch(isDarkMode, (newValue) => {
+    console.log('isDarkMode watcher triggered with value:', newValue)
+    if (newValue) {
+      enableDarkMode()
+    } else {
+      disableDarkMode()
+    }
+  })
   
   // Watch for system preference changes
   const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
@@ -288,6 +302,20 @@ export const useBreathingStore = defineStore('breathing', () => {
     session.value.currentPhase = BreathPhase.COMPLETED
   }
 
+  // Reset the session to initial state (for menu)
+  function resetSession() {
+    session.value = {
+      currentPhase: BreathPhase.PREPARE,
+      currentRound: 1,
+      currentSetIndex: 0,
+      timeRemaining: 3,
+      isRunning: false,
+      totalRounds: currentExercise.value.rounds
+    }
+    clearAllTimers()
+    isWaitingAtZero.value = false
+  }
+
   // Helper to clear all timers
   function clearAllTimers() {
     if (timerInterval) clearInterval(timerInterval)
@@ -399,6 +427,7 @@ export const useBreathingStore = defineStore('breathing', () => {
     toggleTimerFormat,
     formatTime,
     startSession,
-    stopSession
+    stopSession,
+    resetSession
   }
 }) 

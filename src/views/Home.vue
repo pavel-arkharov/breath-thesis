@@ -26,6 +26,11 @@ function stopSession() {
   store.stopSession()
 }
 
+// Reset to menu state (initial state without starting a new session)
+function resetToMenu() {
+  store.resetSession()
+}
+
 // Go to settings page
 function goToSettings() {
   // If a session is active, stop it
@@ -38,51 +43,45 @@ function goToSettings() {
 
 <template>
   <div class="container mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold mb-6 text-center">Breathing Trainer</h1>
+    <h1 class="text-3xl font-bold mb-6 text-center text-gray-900 dark:text-white">Take a breath</h1>
     
     <div class="flex flex-col items-center justify-center">
       <!-- Breathing circle component -->
       <BreathingCircle class="mb-8" />
       
-      <!-- Controls when no session is active -->
-      <div v-if="!isSessionActive && !isSessionCompleted" class="flex gap-4">
+      <!-- Start button when no active session and not completed -->
+      <div v-if="!isSessionActive && !isSessionCompleted" class="flex justify-center">
         <button 
           @click="startSession" 
-          class="px-6 py-3 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600 transition"
+          class="px-10 py-4 bg-blue-500 dark:bg-black dark:text-neon-green text-white text-lg rounded-lg font-semibold hover:bg-blue-600 dark:hover:bg-neon-green/20 transition shadow-md dark:shadow-neon-green/50"
         >
           Start
         </button>
-        <button 
-          @click="goToSettings" 
-          class="px-6 py-3 bg-gray-200 text-gray-800 rounded-lg font-semibold hover:bg-gray-300 transition"
-        >
-          Settings
-        </button>
       </div>
       
-      <!-- Controls when session is active -->
-      <div v-if="isSessionActive && !isSessionCompleted" class="flex gap-4">
-        <button 
-          @click="stopSession" 
-          class="px-6 py-3 bg-red-500 text-white rounded-lg font-semibold hover:bg-red-600 transition"
-        >
-          Stop
-        </button>
-      </div>
-      
-      <!-- Controls when session is completed -->
-      <div v-if="isSessionCompleted" class="flex gap-4">
+      <!-- Start Over and To Menu buttons when completed -->
+      <div v-if="isSessionCompleted" class="flex justify-center space-x-4">
         <button 
           @click="startSession" 
-          class="px-6 py-3 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600 transition"
+          class="px-10 py-4 bg-blue-500 dark:bg-black dark:text-neon-green text-white text-lg rounded-lg font-semibold hover:bg-blue-600 dark:hover:bg-neon-green/20 transition shadow-md dark:shadow-neon-green/50"
         >
-          Start Again
+          Start Over
         </button>
         <button 
-          @click="goToSettings" 
-          class="px-6 py-3 bg-gray-200 text-gray-800 rounded-lg font-semibold hover:bg-gray-300 transition"
+          @click="resetToMenu" 
+          class="px-10 py-4 bg-gray-500 dark:bg-black dark:text-neon-blue text-white text-lg rounded-lg font-semibold hover:bg-gray-600 dark:hover:bg-neon-blue/20 transition shadow-md dark:shadow-neon-blue/50"
         >
-          Settings
+          To Menu
+        </button>
+      </div>
+      
+      <!-- Stop button when session is active -->
+      <div v-if="isSessionActive && !isSessionCompleted" class="flex justify-center">
+        <button 
+          @click="stopSession" 
+          class="px-10 py-4 bg-red-500 dark:bg-black dark:text-neon-pink text-white text-lg rounded-lg font-semibold hover:bg-red-600 dark:hover:bg-neon-pink/20 transition shadow-md dark:shadow-neon-pink/50"
+        >
+          Stop
         </button>
       </div>
     </div>
