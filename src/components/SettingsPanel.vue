@@ -172,6 +172,7 @@ function closePanel() {
           <select 
             class="w-full p-2 border border-gray-500 dark:border-gray-600 rounded-md bg-white dark:bg-dark-100 text-gray-900 dark:text-white"
             @change="speechSynthesis.changeVoice($event)"
+            :value="speechSynthesis.selectedVoiceIndex"
           >
             <option v-for="(voice, index) in speechSynthesis.voices" :key="index" :value="index">
               {{ voice.name }} ({{ voice.lang }})
@@ -225,7 +226,7 @@ function closePanel() {
         
         <!-- Test Voice button -->
         <button 
-          @click="speechSynthesis && speechSynthesis.speak('This is a test of the voice guidance system')"
+          @click="speechSynthesis && speechSynthesis.testVoice('Test test')"
           class="mt-2 px-4 py-2 bg-blue-500 dark:bg-black dark:text-neon-green dark:border dark:border-neon-green text-white rounded-md hover:bg-blue-600 dark:hover:bg-neon-green/20 transition text-sm"
         >
           Test Voice

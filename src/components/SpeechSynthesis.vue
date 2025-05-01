@@ -9,6 +9,8 @@ const store = useBreathingStore()
 const synth = ref<SpeechSynthesis | null>(null)
 const voices = ref<SpeechSynthesisVoice[]>([])
 const selectedVoice = ref<SpeechSynthesisVoice | null>(null)
+const selectedVoiceIndex = ref<number>(-1)
+const selectedVoiceURI = ref<string>('')
 const isMuted = ref(true)
 const volume = ref(1.0)
 const rate = ref(0.9) // slightly slower than normal for guidance
@@ -24,6 +26,27 @@ onMounted(() => {
     const loadVoices = () => {
       voices.value = synth.value?.getVoices() || []
       
+      // Check if there's a previously selected voice URI (more reliable than index)
+      const savedVoiceURI = localStorage.getItem('selectedVoiceURI')
+      
+      if (savedVoiceURI) {
+        // Try to find the voice by URI
+        const matchingVoice = voices.value.find(voice => voice.voiceURI === savedVoiceURI)
+        if (matchingVoice) {
+          selectedVoice.value = matchingVoice
+          selectedVoiceURI.value = matchingVoice.voiceURI
+          selectedVoiceIndex.value = voices.value.findIndex(v => v.voiceURI === savedVoiceURI)
+          console.log('Using saved voice:', matchingVoice.name, 'URI:', matchingVoice.voiceURI)
+        } else {
+          fallbackToDefaultVoice()
+        }
+      } else {
+        fallbackToDefaultVoice()
+      }
+    }
+    
+    // Fallback logic for selecting a default voice
+    const fallbackToDefaultVoice = () => {
       // Try to find a female English voice, or fall back to the first available
       const englishVoice = voices.value.find(voice => 
         voice.lang.includes('en') && voice.name.toLowerCase().includes('female')
@@ -33,7 +56,9 @@ onMounted(() => {
       
       if (englishVoice) {
         selectedVoice.value = englishVoice
-        console.log('Selected voice:', englishVoice.name)
+        selectedVoiceURI.value = englishVoice.voiceURI
+        selectedVoiceIndex.value = voices.value.findIndex(v => v.voiceURI === englishVoice.voiceURI)
+        console.log('Selected default voice:', englishVoice.name, 'URI:', englishVoice.voiceURI)
       }
     }
     
@@ -67,6 +92,7 @@ function speak(text: string) {
   // Set properties
   if (selectedVoice.value) {
     utterance.voice = selectedVoice.value
+    console.log('Speaking with voice:', selectedVoice.value.name, 'URI:', selectedVoice.value.voiceURI)
   }
   utterance.volume = volume.value
   utterance.rate = rate.value
@@ -74,6 +100,29 @@ function speak(text: string) {
   
   // Speak
   synth.value.speak(utterance)
+}
+
+// Test voice regardless of mute state
+function testVoice(text: string) {
+  if (!synth.value) return
+  
+  // Save current mute state
+  const wasMuted = isMuted.value
+  
+  // Temporarily unmute if needed
+  if (wasMuted) {
+    isMuted.value = false
+  }
+  
+  // Speak the text
+  speak(text)
+  
+  // Restore mute state
+  if (wasMuted) {
+    isMuted.value = true
+  }
+  
+  console.log('Test voice executed with text:', text)
 }
 
 // Announce the current phase
@@ -134,11 +183,42 @@ function toggleMute() {
 function changeVoice(event: Event) {
   const select = event.target as HTMLSelectElement
   const voiceIndex = parseInt(select.value)
-  selectedVoice.value = voices.value[voiceIndex]
   
-  // Give feedback
-  if (!isMuted.value) {
-    speak('Voice changed')
+  if (voices.value[voiceIndex]) {
+    const newVoice = voices.value[voiceIndex]
+    selectedVoiceIndex.value = voiceIndex
+    selectedVoice.value = newVoice
+    selectedVoiceURI.value = newVoice.voiceURI
+    
+    // Save both index and URI to localStorage for better reliability
+    localStorage.setItem('selectedVoiceIndex', voiceIndex.toString())
+    localStorage.setItem('selectedVoiceURI', newVoice.voiceURI)
+    
+    console.log('Voice changed to:', newVoice.name, 'URI:', newVoice.voiceURI)
+    
+    // Force a refresh in case the voices array has changed
+    if (synth.value) {
+      const freshVoices = synth.value.getVoices()
+      if (freshVoices.length > 0) {
+        voices.value = freshVoices
+        // Find the matching voice by URI which is more reliable
+        const matchingVoice = freshVoices.find(v => 
+          v.voiceURI === selectedVoice.value?.voiceURI
+        )
+        if (matchingVoice) {
+          selectedVoice.value = matchingVoice
+          console.log('Refreshed voice reference to:', matchingVoice.name)
+        }
+      }
+    }
+    
+    // Give feedback if unmuted
+    if (!isMuted.value) {
+      // Use a small delay to make sure the voice change takes effect
+      setTimeout(() => {
+        speak('Voice changed to ' + newVoice.name)
+      }, 100)
+    }
   }
 }
 
@@ -159,7 +239,9 @@ defineExpose({
   toggleMute,
   isMuted,
   speak,
+  testVoice,
   voices,
+  selectedVoiceIndex,
   changeVoice,
   adjustRate,
   adjustVolume
