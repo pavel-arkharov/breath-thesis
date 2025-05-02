@@ -1,11 +1,14 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useBreathingStore } from '@/stores/breathingStore'
 import AudioPlayer from './AudioPlayer.vue'
 import SpeechSynthesis from './SpeechSynthesis.vue'
+import AboutModal from './AboutModal.vue'
 
 const router = useRouter()
 const store = useBreathingStore()
+const showAboutModal = ref(false)
 
 // Emit toggle settings event
 const emit = defineEmits(['toggle-settings'])
@@ -20,6 +23,11 @@ function toggleDarkMode() {
   console.log('Navbar: toggleDarkMode clicked, current state:', store.isDarkMode)
   store.toggleDarkMode()
   console.log('Navbar: after toggle, new state:', store.isDarkMode)
+}
+
+// Toggle about modal
+function toggleAboutModal() {
+  showAboutModal.value = !showAboutModal.value
 }
 </script>
 
@@ -67,7 +75,21 @@ function toggleDarkMode() {
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
           </svg>
         </button>
+
+        <!-- About/Info button -->
+        <button 
+          @click="toggleAboutModal" 
+          class="p-2 rounded-full hover:bg-slate-300 dark:hover:bg-neon-pink/20 transition"
+          title="About"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-700 dark:text-neon-green" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </button>
       </div>
     </div>
   </nav>
+  
+  <!-- About Modal -->
+  <AboutModal :is-visible="showAboutModal" @close="showAboutModal = false" />
 </template> 
