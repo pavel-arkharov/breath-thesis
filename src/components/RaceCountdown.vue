@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ref, watch, onMounted, computed } from 'vue'
+import { ref, watch, onMounted, computed, onBeforeUnmount } from 'vue'
 import { useBreathingStore } from '@/stores/breathingStore'
+import { Howl } from 'howler'
 
 const store = useBreathingStore()
 const props = defineProps<{
@@ -11,11 +12,11 @@ const props = defineProps<{
 const animationClass = ref('');
 
 // Sound reference
-const countdownBeep = ref<HTMLAudioElement | null>(null);
+const countdownBeep = ref<Howl | null>(null);
 
 // Color based on countdown number
 const countdownColor = computed(() => {
-  const isDarkMode = store.darkMode;
+  const isDarkMode = store.isDarkMode;
   
   switch(props.countdown) {
     case 3: return isDarkMode ? 'text-yellow-400' : 'text-yellow-500';
@@ -28,11 +29,7 @@ const countdownColor = computed(() => {
 // Play beep sound for the countdown
 function playBeep() {
   if (countdownBeep.value) {
-    countdownBeep.value.currentTime = 0;
-    countdownBeep.value.play().catch(err => {
-      // Ignore autoplay errors (common when user hasn't interacted with page)
-      console.log('Audio play prevented:', err);
-    });
+    countdownBeep.value.play();
   }
 }
 
@@ -56,12 +53,30 @@ watch(
 
 // Set up after component is mounted
 onMounted(() => {
-  // Create audio element for beep sound
-  countdownBeep.value = new Audio();
-  countdownBeep.value.src = 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA//tAwAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAADwAD///////////////////////////////////////////8AAAA8TEFNRTMuMTAwBK8AAAAAAAAAABQgJALNQQABzAAAA8DWZ0PnAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//tAwAAAE8kFX9TAABK6SGi5mBAA0EAXh9zSAEonD7mmTO+XPnBGIwyD/8uev//lz5c+fIBAyEMfLnz58IBh8Ph8Pj88EAMfD4fD4fj4fD4fD4fD4fD78uev5c+cEA//8ueEDAZc8PggZDLg+fOMieXPmQ5//5jLn/5c+cEA+Qy4IAZc+ZA35c///+XwfBAPh8Hg+QZc+cEA+D4Ph//wfD4flz5wQD4fD4P/////////+XPnBAPh8P//4Ph8EAMfB8Ph/lwQPh///LnDIc/LggZD//lz4QMhgIHDL//5c+XPnBAPlz1+XB88IAZc/8uccZDIQ5c//8uCBl//5c8IAP////y4IBgMhAYdkMUAMUAMUKBgw4QZDMphio3+6qACgBigBigYMAMUAMUDCGAwQoGDFAw9D0JkMxXl8mLT1jpx2Ox2O1C+bOJbHY7HY7EE4gUduO3Hbjtx2ILltx247cFOIFNOJ6cT04npxP/+xjGMY3///43GZOT/9PT09P/pxPTienHbiCcQTiBTTienEFOIJt9MzMzMzMzM//////////////////////////////////TifTiCq7jcZmZmZ6cT6cT6cT04gm304n04nalbTMzMzMzMz///////////////////////8bjMnJ9OJ9OJ9OJ9OJ6cQTb6cT6cQTbgptwU24KbcFNuCm3BTbgptwU24KbcFNuCm3BTbgptwU24KbcFNuCm3BTbgptwU24KbcFNuCm3BTbgptwU24KbcFNuCm3BTbgptwU24KbcFNuCm3BTbgptwU24KbcFNuCm3BQ=';
+  // Create Howl instance for beep sound
+  // This is a base64 encoded MP3 beep
+  const beepSoundBase64 = 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA//tAwAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAADwAD///////////////////////////////////////////8AAAA8TEFNRTMuMTAwBK8AAAAAAAAAABQgJALNQQABzAAAA8DWZ0PnAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//tAwAAAE8kFX9TAABK6SGi5mBAA0EAXh9zSAEonD7mmTO+XPnBGIwyD/8uev//lz5c+fIBAyEMfLnz58IBh8Ph8Pj88EAMfD4fD4fj4fD4fD4fD4fD78uev5c+cEA//8ueEDAZc8PggZDLg+fOMieXPmQ5//5jLn/5c+cEA+Qy4IAZc+ZA35c///+XwfBAPh8Hg+QZc+cEA+D4Ph//wfD4flz5wQD4fD4P/////////+XPnBAPh8P//4Ph8EAMfB8Ph/lwQPh///LnDIc/LggZD//lz4QMhgIHDL//5c+XPnBAPlz1+XB88IAZc/8uccZDIQ5c//8uCBl//5c8IAP////y4IBgMhAYdkMUAMUAMUKBgw4QZDMphio3+6qACgBigBigYMAMUAMUDCGAwQoGDFAw9D0JkMxXl8mLT1jpx2Ox2O1C+bOJbHY7HY7EE4gUduO3Hbjtx2ILltx247cFOIFNOJ6cT04npxP/+xjGMY3///43GZOT/9PT09P/pxPTienHbiCcQTiBTTienEFOIJt9MzMzMzMzM//////////////////////////////////TifTiCq7jcZmZmZ6cT6cT6cT04gm304n04nalbTMzMzMzMz///////////////////////8bjMnJ9OJ9OJ9OJ9OJ6cQTb6cT6cQTbgptwU24KbcFNuCm3BTbgptwU24KbcFNuCm3BTbgptwU24KbcFNuCm3BTbgptwU24KbcFNuCm3BTbgptwU24KbcFNuCm3BTbgptwU24KbcFNuCm3BTbgptwU24KbcFNuCm3BQ=';
+
+  countdownBeep.value = new Howl({
+    src: [beepSoundBase64],
+    format: ['mp3'],
+    volume: 0.7,
+    preload: true,
+    html5: true,
+    onloaderror: (id, error) => {
+      console.error('Beep sound failed to load:', error);
+    }
+  });
   
   // Set animation class
   animationClass.value = 'animated';
+});
+
+// Clean up when component is destroyed
+onBeforeUnmount(() => {
+  if (countdownBeep.value) {
+    countdownBeep.value.unload();
+  }
 });
 </script>
 

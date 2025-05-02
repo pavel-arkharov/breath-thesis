@@ -1,14 +1,13 @@
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
+import { Howl, Howler } from 'howler'
 
 // State for player
 const isPlaying = ref(false)
-const currentAudio = ref<HTMLAudioElement | null>(null)
-const nextAudio = ref<HTMLAudioElement | null>(null)
 const isFading = ref(false)
-const crossfadeDuration = 10 // seconds
 const audioReady = ref(false)
 const audioError = ref<string | null>(null)
+const volume = ref(0.7) // Default volume
 
 // Get the base URL for GitHub Pages deployment
 // @ts-ignore - handle BASE_URL from Vite
@@ -17,154 +16,103 @@ const baseUrl = import.meta.env?.BASE_URL || '/'
 // Properly join the base URL with the audio path
 const audioPath = `${baseUrl}bg-music/ana.mp3`
 
-// Initialize audio objects
+// Create Howl instance with better options
+const sound = ref<Howl | null>(null)
+
+// Initialize audio
 onMounted(() => {
   try {
-    console.log('Initializing audio player with path:', audioPath)
+    console.log('Initializing Howler audio player with path:', audioPath)
     console.log('Current hostname:', window.location.hostname)
     console.log('Is GitHub Pages?', window.location.hostname.includes('github.io'))
     console.log('Base URL:', baseUrl)
     
-    // Create first audio element
-    currentAudio.value = new Audio(audioPath)
-    currentAudio.value.volume = 1
-    currentAudio.value.loop = false // We'll handle looping manually for crossfade
-
-    // Create second audio element for crossfade
-    nextAudio.value = new Audio(audioPath)
-    nextAudio.value.volume = 0
-    nextAudio.value.loop = false
-
-    // Add timeupdate listener to handle crossfade
-    currentAudio.value.addEventListener('timeupdate', handleTimeUpdate)
-    
-    // Add error handling
-    currentAudio.value.addEventListener('error', (e) => {
-      console.error('Audio error:', e)
-      audioError.value = "Couldn't load audio file"
-    })
-    
-    // Log when metadata is loaded to confirm file is valid
-    currentAudio.value.addEventListener('loadedmetadata', () => {
-      console.log('Audio metadata loaded, duration:', currentAudio.value?.duration)
-      audioReady.value = true
+    // Create Howler instance with crossfading capabilities
+    sound.value = new Howl({
+      src: [audioPath],
+      html5: true, // Better performance for streaming
+      loop: true,
+      volume: volume.value,
+      preload: true,
+      onload: () => {
+        console.log('Audio loaded successfully, duration:', sound.value?.duration())
+        audioReady.value = true
+      },
+      onloaderror: (id, error) => {
+        console.error('Audio loading error:', error)
+        audioError.value = "Couldn't load audio file"
+      },
+      onplayerror: (id, error) => {
+        console.error('Audio playback error:', error)
+        
+        // Try to recover by restarting
+        if (sound.value) {
+          sound.value.once('unlock', () => {
+            sound.value?.play()
+          })
+        }
+      }
     })
   } catch (err) {
-    console.error('Error initializing audio player:', err)
+    console.error('Error initializing Howler audio player:', err)
     audioError.value = err instanceof Error ? err.message : String(err)
   }
 })
 
-// Clean up event listeners
+// Clean up on component unmount
 onBeforeUnmount(() => {
-  if (currentAudio.value) {
-    currentAudio.value.removeEventListener('timeupdate', handleTimeUpdate)
-    currentAudio.value.pause()
-  }
-  if (nextAudio.value) {
-    nextAudio.value.pause()
+  if (sound.value) {
+    sound.value.stop()
+    sound.value.unload()
   }
 })
 
-// Handle time update to implement crossfade
-function handleTimeUpdate() {
-  if (!currentAudio.value || !nextAudio.value) return
-
-  const duration = currentAudio.value.duration
-  const currentTime = currentAudio.value.currentTime
-  
-  // Start crossfade when we're 10 seconds from the end
-  if (duration - currentTime <= crossfadeDuration && !isFading.value) {
-    startCrossfade()
-  }
-}
-
-// Start crossfade between current and next audio
-function startCrossfade() {
-  if (!currentAudio.value || !nextAudio.value) return
-  
-  isFading.value = true
-  
-  // Start the next audio
-  nextAudio.value.currentTime = 0
-  nextAudio.value.play()
-  
-  // Create crossfade effect
-  const fadeInterval = setInterval(() => {
-    if (!currentAudio.value || !nextAudio.value) {
-      clearInterval(fadeInterval)
-      return
-    }
-    
-    // Decrease current audio volume
-    if (currentAudio.value.volume > 0.05) {
-      currentAudio.value.volume -= 0.05
-    } else {
-      currentAudio.value.volume = 0
-    }
-    
-    // Increase next audio volume
-    if (nextAudio.value.volume < 0.95) {
-      nextAudio.value.volume += 0.05
-    } else {
-      nextAudio.value.volume = 1
-    }
-    
-    // If crossfade is complete, swap audio elements
-    if (currentAudio.value.volume === 0 && nextAudio.value.volume === 1) {
-      clearInterval(fadeInterval)
-      swapAudio()
-    }
-  }, crossfadeDuration * 1000 / 20) // 20 steps for the crossfade
-}
-
-// Swap current and next audio elements
-function swapAudio() {
-  if (!currentAudio.value || !nextAudio.value) return
-  
-  // Pause the old current audio
-  currentAudio.value.pause()
-  currentAudio.value.currentTime = 0
-  
-  // Swap the references
-  const temp = currentAudio.value
-  currentAudio.value = nextAudio.value
-  nextAudio.value = temp
-  
-  // Reset volumes
-  currentAudio.value.volume = 1
-  nextAudio.value.volume = 0
-  
-  // Reset fading flag
-  isFading.value = false
-}
-
 // Toggle play/pause
 function togglePlay() {
+  if (!sound.value) return
+  
   if (isPlaying.value) {
     pauseAudio()
   } else {
     playAudio()
   }
-  isPlaying.value = !isPlaying.value
 }
 
 // Play the audio
 function playAudio() {
-  if (currentAudio.value) {
-    currentAudio.value.play()
+  if (!sound.value) return
+  
+  if (!sound.value.playing()) {
+    sound.value.fade(0, volume.value, 1000) // Smooth fade in
+    sound.value.play()
+    isPlaying.value = true
   }
 }
 
 // Pause the audio
 function pauseAudio() {
-  if (currentAudio.value) {
-    currentAudio.value.pause()
+  if (!sound.value) return
+  
+  if (sound.value.playing()) {
+    sound.value.fade(volume.value, 0, 1000) // Smooth fade out
+    
+    // Stop playing after fade out
+    setTimeout(() => {
+      if (sound.value) {
+        sound.value.pause()
+      }
+    }, 1000)
+    
+    isPlaying.value = false
   }
-  if (nextAudio.value) {
-    nextAudio.value.pause()
-  }
-  isFading.value = false
+}
+
+// Set volume (0-1)
+function setVolume(newVolume: number) {
+  if (!sound.value) return
+  
+  volume.value = Math.max(0, Math.min(1, newVolume))
+  sound.value.volume(volume.value)
 }
 </script>
 
