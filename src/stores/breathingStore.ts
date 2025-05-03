@@ -97,7 +97,7 @@ export const useBreathingStore = defineStore('breathing', () => {
 
   // Session state
   const session = ref<SessionState>({
-    currentPhase: BreathPhase.PREPARE,
+    currentPhase: BreathPhase.STANDBY,
     currentRound: 1,
     currentSetIndex: 0,
     timeRemaining: 3, // 3 seconds prepare time
@@ -305,7 +305,7 @@ export const useBreathingStore = defineStore('breathing', () => {
   // Reset the session to initial state (for menu)
   function resetSession() {
     session.value = {
-      currentPhase: BreathPhase.PREPARE,
+      currentPhase: BreathPhase.STANDBY,
       currentRound: 1,
       currentSetIndex: 0,
       timeRemaining: 3,

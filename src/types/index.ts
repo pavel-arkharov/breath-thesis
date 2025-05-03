@@ -1,5 +1,6 @@
 // Breathing phase types
 export enum BreathPhase {
+  STANDBY = 'STANDBY',
   PREPARE = 'PREPARE',
   INHALE = 'INHALE',
   HOLD_AFTER_INHALE = 'HOLD',

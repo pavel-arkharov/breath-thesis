@@ -30,6 +30,15 @@ const countdownColor = computed(() => {
 function playBeep() {
   if (countdownBeep.value) {
     countdownBeep.value.play();
+  } else {
+    // Fallback to native Audio API if Howler failed
+    try {
+      const audio = new Audio('/sounds/beep.wav');
+      audio.volume = 0.7;
+      audio.play().catch(err => console.warn('Native audio playback failed:', err));
+    } catch (e) {
+      console.warn('Could not play fallback audio:', e);
+    }
   }
 }
 
@@ -54,17 +63,19 @@ watch(
 // Set up after component is mounted
 onMounted(() => {
   // Create Howl instance for beep sound
-  // This is a base64 encoded MP3 beep
-  const beepSoundBase64 = 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA//tAwAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAADwAD///////////////////////////////////////////8AAAA8TEFNRTMuMTAwBK8AAAAAAAAAABQgJALNQQABzAAAA8DWZ0PnAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//tAwAAAE8kFX9TAABK6SGi5mBAA0EAXh9zSAEonD7mmTO+XPnBGIwyD/8uev//lz5c+fIBAyEMfLnz58IBh8Ph8Pj88EAMfD4fD4fj4fD4fD4fD4fD78uev5c+cEA//8ueEDAZc8PggZDLg+fOMieXPmQ5//5jLn/5c+cEA+Qy4IAZc+ZA35c///+XwfBAPh8Hg+QZc+cEA+D4Ph//wfD4flz5wQD4fD4P/////////+XPnBAPh8P//4Ph8EAMfB8Ph/lwQPh///LnDIc/LggZD//lz4QMhgIHDL//5c+XPnBAPlz1+XB88IAZc/8uccZDIQ5c//8uCBl//5c8IAP////y4IBgMhAYdkMUAMUAMUKBgw4QZDMphio3+6qACgBigBigYMAMUAMUDCGAwQoGDFAw9D0JkMxXl8mLT1jpx2Ox2O1C+bOJbHY7HY7EE4gUduO3Hbjtx2ILltx247cFOIFNOJ6cT04npxP/+xjGMY3///43GZOT/9PT09P/pxPTienHbiCcQTiBTTienEFOIJt9MzMzMzMzM//////////////////////////////////TifTiCq7jcZmZmZ6cT6cT6cT04gm304n04nalbTMzMzMzMz///////////////////////8bjMnJ9OJ9OJ9OJ9OJ6cQTb6cT6cQTbgptwU24KbcFNuCm3BTbgptwU24KbcFNuCm3BTbgptwU24KbcFNuCm3BTbgptwU24KbcFNuCm3BTbgptwU24KbcFNuCm3BTbgptwU24KbcFNuCm3BTbgptwU24KbcFNuCm3BQ=';
-
   countdownBeep.value = new Howl({
-    src: [beepSoundBase64],
-    format: ['mp3'],
+    src: ['/sounds/beep.wav'],
+    format: ['wav'],
     volume: 0.7,
     preload: true,
-    html5: true,
+    html5: false,
     onloaderror: (id, error) => {
       console.error('Beep sound failed to load:', error);
+      // Create a fallback audio method using native Audio API
+      // Instead of replacing Howl with a custom object, we'll use native Audio directly
+      countdownBeep.value = null;
+      
+      // We'll use this fallback in the playBeep function
     }
   });
   

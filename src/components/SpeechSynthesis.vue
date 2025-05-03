@@ -127,23 +127,34 @@ function testVoice(text: string) {
 
 // Announce the current phase
 function announcePhase(phase: BreathPhase) {
+  // Don't announce anything in STANDBY phase
+  if (phase === BreathPhase.STANDBY) return;
+  
   let message = ''
+  let phaseDuration = 0
+  
+  // Get the current timer set being used
+  const currentSet = store.currentExercise.timerSets[store.session.currentSetIndex || 0]
   
   switch (phase) {
     case BreathPhase.PREPARE:
       message = 'Get ready'
       break
     case BreathPhase.INHALE:
-      message = 'Inhale'
+      phaseDuration = currentSet.inhaleTime
+      message = `Inhale for ${phaseDuration}`
       break
     case BreathPhase.HOLD_AFTER_INHALE:
-      message = 'Hold'
+      phaseDuration = currentSet.holdAfterInhaleTime
+      message = `Hold for ${phaseDuration}`
       break
     case BreathPhase.EXHALE:
-      message = 'Exhale'
+      phaseDuration = currentSet.exhaleTime
+      message = `Exhale for ${phaseDuration}`
       break
     case BreathPhase.HOLD_AFTER_EXHALE:
-      message = 'Hold'
+      phaseDuration = currentSet.holdAfterExhaleTime
+      message = `Hold for ${phaseDuration}`
       break
     case BreathPhase.COMPLETED:
       message = 'Exercise completed'
@@ -155,7 +166,20 @@ function announcePhase(phase: BreathPhase) {
 
 // Announce countdown
 function announceCountdown(time: number) {
-  if (time <= 3 && time > 0) {
+  // Special announcements for PREPARE phase
+  if (store.session.currentPhase === BreathPhase.PREPARE) {
+    if (time === 3) {
+      speak('Get Ready in Three')
+    } else if (time === 2) {
+      speak('Two')
+    } else if (time === 1) {
+      speak('One')
+    }
+  } 
+  // For all other active phases, just speak the number
+  else if (store.session.currentPhase !== BreathPhase.STANDBY && 
+           store.session.currentPhase !== BreathPhase.COMPLETED && 
+           time >= 0) {
     speak(time.toString())
   }
 }
