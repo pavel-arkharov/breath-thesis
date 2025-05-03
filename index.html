@@ -7,11 +7,25 @@
     <meta name="description" content="Breathing Trainer App - Customizable breathing exercises for relaxation and focus" />
     <meta name="theme-color" content="#4a90e2" />
     <title>Selected Flow</title>
+    <!-- Set CSS variables for icons early -->
+    <style>
+      :root {
+        --settings-color: #4B5563;
+        --info-color: #4B5563;
+      }
+      
+      html.dark {
+        --settings-color: #1E90FF !important;
+        --info-color: #00FF85 !important;
+      }
+    </style>
     <!-- Prevent flash of unstyled content by setting theme early -->
     <script>
       // Set dark mode before the page loads if previously saved
       if (localStorage.getItem('darkMode') === 'true') {
         document.documentElement.classList.add('dark');
+        document.documentElement.style.setProperty('--settings-color', '#1E90FF');
+        document.documentElement.style.setProperty('--info-color', '#00FF85');
       }
     </script>
     <!-- Dynamic base URL for GitHub Pages compatibility (not needed for Vercel) -->
@@ -23,6 +37,52 @@
         document.write(`<base href="/breath-app/">`);
       }
     </script>
+    <!-- Critical CSS for neon colors - ensure they work in production -->
+    <style>
+      /* Neon colors that might be missing in production */
+      .text-neon-green, .dark .dark\:text-neon-green {
+        color: #00FF85 !important;
+      }
+      
+      .text-neon-blue, .dark .dark\:text-neon-blue {
+        color: #1E90FF !important;
+      }
+      
+      .text-neon-pink, .dark .dark\:text-neon-pink {
+        color: #FF0099 !important;
+      }
+      
+      .dark .dark\:hover\:bg-neon-pink\/20:hover {
+        background-color: rgba(255, 0, 153, 0.2) !important;
+      }
+
+      /* Fix for SVG icons in dark mode */
+      html.dark svg {
+        visibility: visible !important;
+        opacity: 1 !important;
+      }
+
+      /* Directly target navbar SVG icons in dark mode */
+      html.dark .dark\:text-neon-green svg path,
+      html.dark svg.text-neon-green path,
+      html.dark svg.dark\:text-neon-green path {
+        stroke: #00FF85 !important;
+      }
+
+      html.dark .dark\:text-neon-blue svg path,
+      html.dark svg.text-neon-blue path,
+      html.dark svg.dark\:text-neon-blue path {
+        stroke: #1E90FF !important;
+      }
+
+      /* Force navbar icon colors in dark mode */
+      html.dark nav button svg {
+        color: #00FF85 !important;
+        stroke: currentColor !important;
+        fill: none !important;
+        display: block !important;
+      }
+    </style>
     <style>
       /* Direct dark mode override that doesn't depend on Tailwind */
       html.dark {

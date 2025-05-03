@@ -5,6 +5,16 @@ export default {
     "./src/**/*.{vue,js,ts,jsx,tsx}",
   ],
   darkMode: 'class',
+  // Add safelist to ensure critical classes are included in production
+  safelist: [
+    'text-neon-green',
+    'text-neon-blue',
+    'text-neon-pink',
+    'dark:text-neon-green',
+    'dark:text-neon-blue',
+    'dark:text-neon-pink',
+    'dark:hover:bg-neon-pink/20'
+  ],
   theme: {
     extend: {
       colors: {
