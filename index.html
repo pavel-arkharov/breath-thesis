@@ -14,12 +14,14 @@
         document.documentElement.classList.add('dark');
       }
     </script>
-    <!-- Dynamic base URL for GitHub Pages compatibility -->
+    <!-- Dynamic base URL for GitHub Pages compatibility (not needed for Vercel) -->
     <script>
       // Set the base URL dynamically
       const isGitHubPages = window.location.hostname.includes('github.io');
-      const baseUrl = isGitHubPages ? '/breath-app/' : '/';
-      document.write(`<base href="${baseUrl}">`);
+      // Only set base tag for GitHub Pages, not for Vercel or local dev
+      if (isGitHubPages) {
+        document.write(`<base href="/breath-app/">`);
+      }
     </script>
     <style>
       /* Direct dark mode override that doesn't depend on Tailwind */
@@ -84,6 +86,6 @@
         <h2>Loading Breathing Trainer App...</h2>
       </div>
     </div>
-    <script type="module" src="./src/main.ts"></script>
+    <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

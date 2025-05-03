@@ -4,12 +4,20 @@ import { fileURLToPath, URL } from 'node:url'
 import tailwindcss from '@tailwindcss/vite'
 
 // https://vite.dev/config/
-export default defineConfig(({ command }) => {
+export default defineConfig(({ command, mode }) => {
   const isProduction = command === 'build';
+  // Check if we're deploying to Vercel by checking environment or hostname
+  const isVercel = !!process.env.VERCEL || 
+                  (typeof window !== 'undefined' && 
+                   window.location.hostname.includes('vercel.app'));
+  
+  // For production builds on Vercel, use root path
+  const base = isVercel ? '/' : (isProduction ? '/breath-app/' : '/');
+  
+  console.log(`Vite config: isProduction=${isProduction}, isVercel=${isVercel}, base=${base}`);
   
   return {
-    // Base path: use '/breath-app/' for production (GitHub Pages), '/' for development
-    base: isProduction ? '/breath-app/' : '/',
+    base,
     plugins: [
       vue(),
       tailwindcss()
