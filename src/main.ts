@@ -9,9 +9,9 @@ import './assets/darkmode.css'
 import Home from './views/Home.vue'
 import Settings from './views/Settings.vue'
 
-// Get the base URL - empty string for dev, '/breath-thesis/' for production
-// @ts-ignore - handle BASE_URL from Vite
-const baseUrl = import.meta.env?.BASE_URL || '/'
+// Get the base URL for the router
+// For GitHub Pages: '/breath-app/' in production, '/' in development
+const baseUrl = '/'  // Default for development
 
 // Create router instance
 const router = createRouter({

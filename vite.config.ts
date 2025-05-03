@@ -8,8 +8,8 @@ export default defineConfig(({ command }) => {
   const isProduction = command === 'build';
   
   return {
-    // Base path: use '/breath-thesis/' for production (GitHub Pages), '/' for development
-    base: isProduction ? '/breath-thesis/' : '/',
+    // Base path: use '/breath-app/' for production (GitHub Pages), '/' for development
+    base: isProduction ? '/breath-app/' : '/',
     plugins: [
       vue(),
       tailwindcss()

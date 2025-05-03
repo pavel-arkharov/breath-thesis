@@ -9,12 +9,8 @@ const audioReady = ref(false)
 const audioError = ref<string | null>(null)
 const volume = ref(0.7) // Default volume
 
-// Get the base URL for GitHub Pages deployment
-// @ts-ignore - handle BASE_URL from Vite
-const baseUrl = import.meta.env?.BASE_URL || '/'
-
-// Properly join the base URL with the audio path
-const audioPath = `${baseUrl}bg-music/ana.mp3`
+// Simplified audio path - use relative path from public folder
+const audioPath = './bg-music/ana.mp3'
 
 // Create Howl instance with better options
 const sound = ref<Howl | null>(null)
@@ -25,7 +21,7 @@ onMounted(() => {
     console.log('Initializing Howler audio player with path:', audioPath)
     console.log('Current hostname:', window.location.hostname)
     console.log('Is GitHub Pages?', window.location.hostname.includes('github.io'))
-    console.log('Base URL:', baseUrl)
+    console.log('Base URL:', window.location.origin)
     
     // Create Howler instance with crossfading capabilities
     sound.value = new Howl({

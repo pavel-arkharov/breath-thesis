@@ -33,7 +33,7 @@ function playBeep() {
   } else {
     // Fallback to native Audio API if Howler failed
     try {
-      const audio = new Audio('/sounds/beep.wav');
+      const audio = new Audio('./sounds/beep.wav');
       audio.volume = 0.7;
       audio.play().catch(err => console.warn('Native audio playback failed:', err));
     } catch (e) {
@@ -64,7 +64,7 @@ watch(
 onMounted(() => {
   // Create Howl instance for beep sound
   countdownBeep.value = new Howl({
-    src: ['/sounds/beep.wav'],
+    src: ['./sounds/beep.wav'],
     format: ['wav'],
     volume: 0.7,
     preload: true,

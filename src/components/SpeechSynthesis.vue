@@ -15,6 +15,11 @@ const isMuted = ref(true)
 const volume = ref(1.0)
 const rate = ref(0.9) // slightly slower than normal for guidance
 const pitch = ref(1.0)
+// Speech queue
+const speechQueue = ref<string[]>([])
+const isSpeaking = ref(false)
+// Show debug display (can be toggled for testing)
+const showDebug = ref(true)
 
 // Initialize speech synthesis
 onMounted(() => {
@@ -75,16 +80,27 @@ onMounted(() => {
 // Clean up
 onBeforeUnmount(() => {
   if (synth.value) {
-    synth.value.cancel() // Stop any speech in progress
+    clearSpeech()
   }
 })
 
-// Speak a given text
-function speak(text: string) {
-  if (!synth.value || isMuted.value) return
+// Process the speech queue
+function processSpeechQueue() {
+  // If we're already speaking or the queue is empty, or muted, don't do anything
+  if (isSpeaking.value || speechQueue.value.length === 0 || isMuted.value || !synth.value) {
+    return
+  }
   
-  // Cancel any ongoing speech
-  synth.value.cancel()
+  // Set speaking flag
+  isSpeaking.value = true
+  
+  // Get the next text to speak
+  const text = speechQueue.value.shift()
+  
+  if (!text) {
+    isSpeaking.value = false
+    return
+  }
   
   // Create a new utterance
   const utterance = new SpeechSynthesisUtterance(text)
@@ -92,14 +108,51 @@ function speak(text: string) {
   // Set properties
   if (selectedVoice.value) {
     utterance.voice = selectedVoice.value
-    console.log('Speaking with voice:', selectedVoice.value.name, 'URI:', selectedVoice.value.voiceURI)
   }
   utterance.volume = volume.value
   utterance.rate = rate.value
   utterance.pitch = pitch.value
   
+  // Handle utterance end to process next item in queue
+  utterance.onend = () => {
+    isSpeaking.value = false
+    processSpeechQueue()
+  }
+  
+  // Handle errors
+  utterance.onerror = (event) => {
+    console.error('Speech synthesis error:', event)
+    isSpeaking.value = false
+    processSpeechQueue()
+  }
+  
   // Speak
   synth.value.speak(utterance)
+}
+
+// Speak a given text by adding it to the queue
+function speak(text: string) {
+  if (!synth.value || isMuted.value) return
+  
+  // Add to queue
+  speechQueue.value.push(text)
+  
+  // Process queue
+  processSpeechQueue()
+}
+
+// Clear the speech queue and cancel any ongoing speech
+function clearSpeech() {
+  if (!synth.value) return
+  
+  // Cancel any ongoing speech
+  synth.value.cancel()
+  
+  // Clear queue
+  speechQueue.value = []
+  
+  // Reset speaking state
+  isSpeaking.value = false
 }
 
 // Test voice regardless of mute state
@@ -108,6 +161,9 @@ function testVoice(text: string) {
   
   // Save current mute state
   const wasMuted = isMuted.value
+  
+  // Clear any existing speech
+  clearSpeech()
   
   // Temporarily unmute if needed
   if (wasMuted) {
@@ -119,7 +175,10 @@ function testVoice(text: string) {
   
   // Restore mute state
   if (wasMuted) {
-    isMuted.value = true
+    // Use setTimeout to ensure the test message is processed before muting
+    setTimeout(() => {
+      isMuted.value = true
+    }, 100)
   }
   
   console.log('Test voice executed with text:', text)
@@ -129,6 +188,12 @@ function testVoice(text: string) {
 function announcePhase(phase: BreathPhase) {
   // Don't announce anything in STANDBY phase
   if (phase === BreathPhase.STANDBY) return;
+  
+  // Clear the speech queue for new phase announcements
+  // This is one case where we want to prioritize the new announcement
+  if (phase !== BreathPhase.PREPARE) {
+    clearSpeech();
+  }
   
   let message = ''
   let phaseDuration = 0
@@ -176,11 +241,13 @@ function announceCountdown(time: number) {
       speak('One')
     }
   } 
-  // For all other active phases, just speak the number
+  // For other phases, only announce at specific intervals to avoid queue flooding
   else if (store.session.currentPhase !== BreathPhase.STANDBY && 
-           store.session.currentPhase !== BreathPhase.COMPLETED && 
-           time >= 0) {
-    speak(time.toString())
+           store.session.currentPhase !== BreathPhase.COMPLETED) {
+    // Only announce every 5 seconds or the last 3 seconds
+    if (time % 5 === 0 || time <= 3) {
+      speak(time.toString())
+    }
   }
 }
 
@@ -198,7 +265,9 @@ watch(() => store.session.timeRemaining, (newTime) => {
 function toggleMute() {
   isMuted.value = !isMuted.value
   
-  if (!isMuted.value) {
+  if (isMuted.value) {
+    clearSpeech()
+  } else {
     speak('Voice guidance enabled')
   }
 }
@@ -258,6 +327,15 @@ function adjustRate(event: Event) {
   rate.value = parseFloat(input.value)
 }
 
+// Get queue status
+function getQueueStatus() {
+  return {
+    queueLength: speechQueue.value.length,
+    isSpeaking: isSpeaking.value,
+    currentQueue: [...speechQueue.value]
+  }
+}
+
 // Expose functions and properties
 defineExpose({
   toggleMute,
@@ -268,7 +346,11 @@ defineExpose({
   selectedVoiceIndex,
   changeVoice,
   adjustRate,
-  adjustVolume
+  adjustVolume,
+  clearSpeech,
+  getQueueStatus,
+  speechQueue,
+  showDebug
 })
 </script>
 
@@ -290,11 +372,62 @@ defineExpose({
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
       </svg>
     </button>
+    
+    <!-- Debug info - toggled with showDebug flag -->
+    <div v-if="showDebug" class="speech-debug">
+      <div class="speech-debug-content">
+        <div class="speech-debug-status">
+          <span :class="isSpeaking ? 'active' : ''">{{ isSpeaking ? 'Speaking' : 'Silent' }}</span>
+          <span>Queue: {{ speechQueue.length }}</span>
+        </div>
+        <div v-if="speechQueue.length > 0" class="speech-debug-queue">
+          <div v-for="(item, index) in speechQueue" :key="index" class="speech-queue-item">
+            {{ index === 0 ? '→ ' : '' }}{{ item }}
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <style scoped>
 .speech-synthesis {
   position: relative;
+}
+
+.speech-debug {
+  position: absolute;
+  bottom: 100%;
+  right: 0;
+  margin-bottom: 4px;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 12px;
+  min-width: 150px;
+}
+
+.speech-debug-status {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 2px;
+}
+
+.speech-debug-status .active {
+  color: #4ade80;
+}
+
+.speech-debug-queue {
+  max-height: 80px;
+  overflow-y: auto;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  padding-top: 2px;
+}
+
+.speech-queue-item {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style> 
