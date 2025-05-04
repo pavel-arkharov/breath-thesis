@@ -23,7 +23,7 @@ const maxPhaseTime = computed(() => {
 <template>
   <div class="timer-preset-table">
     <div class="text-center mb-4 font-medium text-lg text-gray-800 dark:text-gray-200">
-      Choose your flow
+      Your current exercise settings:
     </div>
     
     <div class="flex items-start gap-4">
