@@ -3,20 +3,26 @@
 import { onMounted, watch, ref } from 'vue'
 import Navbar from './components/Navbar.vue'
 import SettingsPanel from './components/SettingsPanel.vue'
+import DebugMenu from './components/DebugMenu.vue'
 import { useBreathingStore } from '@/stores/breathingStore'
+import { useUserStore } from '@/stores/userStore'
 
-const store = useBreathingStore()
+const breathingStore = useBreathingStore()
+const userStore = useUserStore()
 const isSettingsPanelVisible = ref(false)
 
-console.log('App.vue initial isDarkMode state:', store.isDarkMode)
+console.log('App.vue initial isDarkMode state:', userStore.userSettings.darkMode)
 
 // Apply dark mode based on store settings
 onMounted(() => {
-  console.log('App.vue onMounted - isDarkMode:', store.isDarkMode)
+  console.log('App.vue onMounted - isDarkMode:', userStore.userSettings.darkMode)
+  
+  // Initialize auth
+  userStore.initAuth()
 })
 
 // Watch for changes to dark mode
-watch(() => store.isDarkMode, (newValue) => {
+watch(() => userStore.userSettings.darkMode, (newValue) => {
   console.log('App.vue - isDarkMode changed to:', newValue)
 }, { immediate: true })
 
@@ -42,5 +48,8 @@ function toggleSettingsPanel() {
       @close="isSettingsPanelVisible = false"
       @save="isSettingsPanelVisible = false"
     />
+    
+    <!-- Debug Menu -->
+    <DebugMenu />
   </div>
 </template>
