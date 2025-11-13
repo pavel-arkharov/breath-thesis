@@ -77,7 +77,7 @@ const gradualIncreasePreset: BreathingPattern = {
 <template>
   <div class="breathing-presets">
     <div class="presets-header flex justify-between items-center mb-2">
-      <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200">Presets</h3>
+      <h3 class="text-lg font-semibold" :style="{ color: store.isDarkMode ? '#e5e7eb' : '#000000' }">Presets</h3>
       <button 
         @click="toggleExpanded" 
         class="fold-button p-1 rounded-full hover:bg-slate-300 dark:hover:bg-neon-pink/20 transition"

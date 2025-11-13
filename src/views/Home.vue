@@ -49,7 +49,7 @@ function goToSettings() {
 
 <template>
   <div class="container mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold mb-6 text-center text-gray-900 dark:text-white">Take a breath</h1>
+    <h1 class="text-3xl font-bold mb-6 text-center" :style="{ color: store.isDarkMode ? '#ffffff' : '#000000' }">Take a breath</h1>
     
     <!-- Main layout - responsive grid -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
