@@ -1,24 +1,9 @@
 <script setup lang="ts">
-// Initialize app
-import { onMounted, watch, ref } from 'vue'
+import { ref } from 'vue'
 import Navbar from './components/Navbar.vue'
 import SettingsPanel from './components/SettingsPanel.vue'
-import { useBreathingStore } from '@/stores/breathingStore'
 
-const store = useBreathingStore()
 const isSettingsPanelVisible = ref(false)
-
-console.log('App.vue initial isDarkMode state:', store.isDarkMode)
-
-// Apply dark mode based on store settings
-onMounted(() => {
-  console.log('App.vue onMounted - isDarkMode:', store.isDarkMode)
-})
-
-// Watch for changes to dark mode
-watch(() => store.isDarkMode, (newValue) => {
-  console.log('App.vue - isDarkMode changed to:', newValue)
-}, { immediate: true })
 
 // Toggle settings panel visibility
 function toggleSettingsPanel() {

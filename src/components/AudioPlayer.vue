@@ -18,11 +18,6 @@ const sound = ref<Howl | null>(null)
 // Initialize audio
 onMounted(() => {
   try {
-    console.log('Initializing Howler audio player with path:', audioPath)
-    console.log('Current hostname:', window.location.hostname)
-    console.log('Is GitHub Pages?', window.location.hostname.includes('github.io'))
-    console.log('Base URL:', window.location.origin)
-    
     // Create Howler instance with crossfading capabilities
     sound.value = new Howl({
       src: [audioPath],
@@ -31,7 +26,6 @@ onMounted(() => {
       volume: volume.value,
       preload: true,
       onload: () => {
-        console.log('Audio loaded successfully, duration:', sound.value?.duration())
         audioReady.value = true
       },
       onloaderror: (id, error) => {
