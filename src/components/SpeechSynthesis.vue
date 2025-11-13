@@ -41,7 +41,6 @@ onMounted(() => {
           selectedVoice.value = matchingVoice
           selectedVoiceURI.value = matchingVoice.voiceURI
           selectedVoiceIndex.value = voices.value.findIndex(v => v.voiceURI === savedVoiceURI)
-          console.log('Using saved voice:', matchingVoice.name, 'URI:', matchingVoice.voiceURI)
         } else {
           fallbackToDefaultVoice()
         }
@@ -63,7 +62,6 @@ onMounted(() => {
         selectedVoice.value = englishVoice
         selectedVoiceURI.value = englishVoice.voiceURI
         selectedVoiceIndex.value = voices.value.findIndex(v => v.voiceURI === englishVoice.voiceURI)
-        console.log('Selected default voice:', englishVoice.name, 'URI:', englishVoice.voiceURI)
       }
     }
     
@@ -180,8 +178,6 @@ function testVoice(text: string) {
       isMuted.value = true
     }, 100)
   }
-  
-  console.log('Test voice executed with text:', text)
 }
 
 // Announce the current phase
@@ -287,8 +283,6 @@ function changeVoice(event: Event) {
     localStorage.setItem('selectedVoiceIndex', voiceIndex.toString())
     localStorage.setItem('selectedVoiceURI', newVoice.voiceURI)
     
-    console.log('Voice changed to:', newVoice.name, 'URI:', newVoice.voiceURI)
-    
     // Force a refresh in case the voices array has changed
     if (synth.value) {
       const freshVoices = synth.value.getVoices()
@@ -300,7 +294,6 @@ function changeVoice(event: Event) {
         )
         if (matchingVoice) {
           selectedVoice.value = matchingVoice
-          console.log('Refreshed voice reference to:', matchingVoice.name)
         }
       }
     }

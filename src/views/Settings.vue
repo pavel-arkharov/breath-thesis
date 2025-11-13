@@ -23,9 +23,7 @@ function addTimerSet() {
 
 // Toggle dark mode
 function toggleDarkMode() {
-  console.log('Settings.vue toggleDarkMode called')
   store.toggleDarkMode()
-  console.log('After calling store.toggleDarkMode, isDarkMode =', store.isDarkMode)
 }
 
 // Toggle timer format

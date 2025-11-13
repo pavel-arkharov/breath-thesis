@@ -22,7 +22,7 @@ const maxPhaseTime = computed(() => {
 
 <template>
   <div class="timer-preset-table">
-    <div class="text-center mb-4 font-medium text-lg text-gray-800 dark:text-gray-200">
+    <div class="text-center mb-4 font-medium text-lg" :style="{ color: store.isDarkMode ? '#e5e7eb' : '#000000' }">
       Your current exercise settings:
     </div>
     

@@ -20,9 +20,7 @@ function toggleSettings() {
 
 // Toggle dark mode
 function toggleDarkMode() {
-  console.log('Navbar: toggleDarkMode clicked, current state:', store.isDarkMode)
   store.toggleDarkMode()
-  console.log('Navbar: after toggle, new state:', store.isDarkMode)
 }
 
 // Toggle about modal

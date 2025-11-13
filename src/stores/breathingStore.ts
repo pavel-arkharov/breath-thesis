@@ -24,37 +24,21 @@ const saveToStorage = <T>(key: string, value: T): void => {
 
 // Direct DOM manipulations for dark mode
 const enableDarkMode = (): void => {
-  console.log('enableDarkMode called, adding dark class...')
-  // Apply the dark class to document element for Tailwind dark mode
   document.documentElement.classList.add('dark')
-  
-  // Set a data attribute for additional CSS hooks 
   document.documentElement.setAttribute('data-theme', 'dark')
-  
   // Force a reflow to ensure style changes are applied immediately
   document.documentElement.style.color = document.documentElement.style.color
-  
-  console.log('Dark mode enabled, classes:', document.documentElement.className)
 }
 
 const disableDarkMode = (): void => {
-  console.log('disableDarkMode called, removing dark class...')
-  // Remove the dark class
   document.documentElement.classList.remove('dark')
-  
-  // Remove the data attribute
   document.documentElement.setAttribute('data-theme', 'light')
-  
   // Force a reflow to ensure style changes are applied immediately
   document.documentElement.style.color = document.documentElement.style.color
-  
-  console.log('Dark mode disabled, classes:', document.documentElement.className)
 }
 
 // Apply dark mode class to document
 const applyDarkMode = (isDark: boolean): void => {
-  console.log('Applying dark mode:', isDark)
-  
   if (isDark) {
     enableDarkMode()
   } else {
@@ -113,76 +97,36 @@ export const useBreathingStore = defineStore('breathing', () => {
   
   // Initialize dark mode based on saved preference or system preference
   const initializeDarkMode = (): void => {
-    console.log('initializeDarkMode called');
-    // First check localStorage for saved preference
     const savedMode = localStorage.getItem('darkMode')
-    console.log('Saved dark mode preference:', savedMode);
     
     if (savedMode !== null) {
       // User has a saved preference
-      const darkModeEnabled = savedMode === 'true'
-      console.log('Using saved preference, dark mode enabled:', darkModeEnabled);
-      isDarkMode.value = darkModeEnabled
-      
-      if (darkModeEnabled) {
-        enableDarkMode()
-      } else {
-        disableDarkMode()
-      }
+      isDarkMode.value = savedMode === 'true'
     } else {
       // No saved preference, check system preference
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-      console.log('No saved preference, using system preference:', prefersDark);
-      isDarkMode.value = prefersDark
-      
-      if (prefersDark) {
-        enableDarkMode()
-      } else {
-        disableDarkMode()
-      }
+      isDarkMode.value = window.matchMedia('(prefers-color-scheme: dark)').matches
     }
+    
+    // Apply the initial dark mode state
+    applyDarkMode(isDarkMode.value)
   }
   
   // Toggle dark mode
   const toggleDarkMode = (): void => {
-    console.log('toggleDarkMode called, current state:', isDarkMode.value)
     isDarkMode.value = !isDarkMode.value
     localStorage.setItem('darkMode', isDarkMode.value.toString())
-    
-    if (isDarkMode.value) {
-      console.log('Enabling dark mode...')
-      enableDarkMode()
-    } else {
-      console.log('Disabling dark mode...')
-      disableDarkMode()
-    }
-    console.log('After toggle, isDarkMode =', isDarkMode.value)
+    applyDarkMode(isDarkMode.value)
   }
   
   // Initialize dark mode on store creation
   initializeDarkMode()
   
-  // Watch for isDarkMode changes to apply them
-  watch(isDarkMode, (newValue) => {
-    console.log('isDarkMode watcher triggered with value:', newValue)
-    if (newValue) {
-      enableDarkMode()
-    } else {
-      disableDarkMode()
-    }
-  })
-  
-  // Watch for system preference changes
+  // Watch for system preference changes (only if user hasn't set their own preference)
   const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
   darkModeMediaQuery.addEventListener('change', (e) => {
-    // Only apply system preference if user hasn't set their own preference
     if (localStorage.getItem('darkMode') === null) {
       isDarkMode.value = e.matches
-      if (e.matches) {
-        enableDarkMode()
-      } else {
-        disableDarkMode()
-      }
+      applyDarkMode(isDarkMode.value)
     }
   })
   
